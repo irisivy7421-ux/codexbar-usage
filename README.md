@@ -10,6 +10,8 @@
 
 它调用本机的 `codex app-server`，不读取密码、Cookie 或 `auth.json`，也不会把额度数据发送到网络。
 
+Codex 更新可能调整内置命令行工具的位置。CodexBar 会优先使用新版 Codex Desktop 的路径，同时兼容旧版 ChatGPT Desktop 的路径。
+
 ## 打包过程
 
 `scripts/package_app.sh` 做了四件小事：编译 Swift 源码、搭出 macOS `.app` 的目录结构、写入 App 元信息、用本机 ad-hoc 签名验证。`dist/` 是每次构建重新生成的文件，所以不会提交到 GitHub。

@@ -36,8 +36,7 @@ actor CodexAppServerClient {
 
     private func startIfNeeded() throws {
         if process?.isRunning == true { return }
-        let url = URL(fileURLWithPath: "/Applications/ChatGPT.app/Contents/Resources/codex")
-        guard FileManager.default.isExecutableFile(atPath: url.path) else { throw CodexAppServerError.executableNotFound }
+        guard let url = codexExecutableURL() else { throw CodexAppServerError.executableNotFound }
 
         let task = Process()
         let stdin = Pipe()
@@ -59,6 +58,22 @@ actor CodexAppServerClient {
         process = task
         input = stdin.fileHandleForWriting
         initialized = false
+    }
+
+    private func codexExecutableURL() -> URL? {
+        // Codex Desktop 0.163 moved the bundled executable into CodexCLI.app.
+        // Keep the former path so installations that have not updated still work.
+        let candidates = [
+            "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+            "/Applications/ChatGPT.app/Contents/Resources/codex",
+            "/Applications/Codex.app/Contents/MacOS/codex",
+            "/Applications/Codex.app/Contents/Resources/codex"
+        ]
+
+        guard let path = candidates.first(where: FileManager.default.isExecutableFile) else {
+            return nil
+        }
+        return URL(fileURLWithPath: path)
     }
 
     private func request(method: String, params: [String: Any]) async throws -> [String: Any] {
