@@ -36,7 +36,9 @@ final class UsageStore: ObservableObject {
     init() {
         refresh()
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.refresh() }
+            Task { @MainActor [weak self] in
+                self?.refresh()
+            }
         }
     }
 

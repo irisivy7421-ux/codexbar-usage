@@ -52,7 +52,9 @@ actor CodexAppServerClient {
             for line in text.split(separator: "\n") { self?.receive(String(line)) }
         }
         task.terminationHandler = { [weak self] _ in
-            Task { await self?.didTerminate() }
+            Task { [weak self] in
+                await self?.didTerminate()
+            }
         }
         try task.run()
         process = task
